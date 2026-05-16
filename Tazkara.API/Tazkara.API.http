@@ -1,0 +1,6 @@
+@Tazkara.API_HostAddress = http://localhost:5037
+
+GET {{Tazkara.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

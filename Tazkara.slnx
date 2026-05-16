@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Tazkara.API/Tazkara.API.csproj" />
+  <Project Path="Tazkara.Application/Tazkara.Application.csproj" />
+  <Project Path="Tazkara.Domain/Tazkara.Domain.csproj" />
+  <Project Path="Tazkara.Infrastructure/Tazkara.Infrastructure.csproj" />
+  <Project Path="Tazkara.Shared/Tazkara.Shared.csproj" />
+</Solution>
