@@ -17,6 +17,7 @@ using Tazkara.Domain.Entities;
 using Tazkara.Infrastructure.Data;
 using Tazkara.Infrastructure.Repositories;
 using Tazkara.Infrastructure.Services;
+using Tazkara.Infrastructure.Services.PaymentGateways;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -84,9 +85,19 @@ builder.Services.AddAuthentication(options =>
 // Configure Services
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IEventRepository, EventRepository>();
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+
 builder.Services.AddScoped<IIdentityService, IdentityService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<ITicketService, TicketService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+
+// Payment Gateways
+builder.Services.AddTransient<PayPalGateway>();
+builder.Services.AddTransient<VodafoneCashGateway>();
+builder.Services.AddScoped<IPaymentGatewayFactory, PaymentGatewayFactory>();
 
 // Configure OpenAPI
 builder.Services.AddOpenApi();

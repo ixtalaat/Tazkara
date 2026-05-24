@@ -8,6 +8,8 @@ namespace Tazkara.Infrastructure.Data
     {
         public DbSet<Event> Events { get; set; } = null!;
         public DbSet<Category> Categories { get; set; } = null!;
+        public DbSet<Ticket> Tickets { get; set; } = null!;
+        public DbSet<Payment> Payments { get; set; } = null!;
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -34,6 +36,9 @@ namespace Tazkara.Infrastructure.Data
                 entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
                 entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
                 
+                // Concurrency token
+                entity.Property(e => e.RowVersion).IsRowVersion();
+                
                 // Relationships
                 entity.HasOne(e => e.Organizer)
                       .WithMany()
@@ -51,6 +56,36 @@ namespace Tazkara.Infrastructure.Data
             {
                 entity.HasKey(c => c.Id);
                 entity.Property(c => c.Name).IsRequired().HasMaxLength(100);
+            });
+
+            // Ticket Configuration
+            builder.Entity<Ticket>(entity =>
+            {
+                entity.HasKey(t => t.Id);
+                entity.Property(t => t.TicketNumber).IsRequired().HasMaxLength(50);
+                entity.HasIndex(t => t.TicketNumber).IsUnique();
+
+                entity.HasOne(t => t.Event)
+                      .WithMany()
+                      .HasForeignKey(t => t.EventId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(t => t.User)
+                      .WithMany()
+                      .HasForeignKey(t => t.UserId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // Payment Configuration
+            builder.Entity<Payment>(entity =>
+            {
+                entity.HasKey(p => p.Id);
+                entity.Property(p => p.Amount).HasColumnType("decimal(18,2)");
+                
+                entity.HasOne(p => p.Ticket)
+                      .WithMany(t => t.Payments)
+                      .HasForeignKey(p => p.TicketId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

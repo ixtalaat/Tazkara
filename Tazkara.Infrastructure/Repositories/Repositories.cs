@@ -77,4 +77,48 @@ namespace Tazkara.Infrastructure.Repositories
             return (items, totalCount);
         }
     }
+
+    public class TicketRepository : BaseRepository<Ticket>, ITicketRepository
+    {
+        public TicketRepository(ApplicationDbContext dbContext) : base(dbContext)
+        {
+        }
+
+        public async Task<Ticket?> GetTicketWithDetailsAsync(Guid id)
+        {
+            return await _dbContext.Tickets
+                .Include(t => t.Event)
+                .Include(t => t.User)
+                .FirstOrDefaultAsync(t => t.Id == id);
+        }
+
+        public async Task<List<Ticket>> GetUserTicketsAsync(Guid userId)
+        {
+            return await _dbContext.Tickets
+                .Include(t => t.Event)
+                .Where(t => t.UserId == userId)
+                .OrderByDescending(t => t.ReservedAt)
+                .ToListAsync();
+        }
+
+        public async Task<bool> HasUserBookedEventAsync(Guid userId, Guid eventId)
+        {
+            return await _dbContext.Tickets
+                .AnyAsync(t => t.UserId == userId && t.EventId == eventId && t.Status != TicketStatus.Cancelled);
+        }
+    }
+
+    public class PaymentRepository : BaseRepository<Payment>, IPaymentRepository
+    {
+        public PaymentRepository(ApplicationDbContext dbContext) : base(dbContext)
+        {
+        }
+
+        public async Task<Payment?> GetByTransactionIdAsync(string transactionId)
+        {
+            return await _dbContext.Payments
+                .Include(p => p.Ticket)
+                .FirstOrDefaultAsync(p => p.TransactionId == transactionId);
+        }
+    }
 }

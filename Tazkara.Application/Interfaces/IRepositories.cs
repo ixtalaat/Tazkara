@@ -14,4 +14,16 @@ namespace Tazkara.Application.Interfaces
         Task<List<Event>> GetOrganizerEventsAsync(Guid organizerId);
         Task<(List<Event> Items, int TotalCount)> BrowseEventsAsync(EventFilterRequest filter);
     }
+
+    public interface ITicketRepository : IAsyncRepository<Ticket>
+    {
+        Task<Ticket?> GetTicketWithDetailsAsync(Guid id);
+        Task<List<Ticket>> GetUserTicketsAsync(Guid userId);
+        Task<bool> HasUserBookedEventAsync(Guid userId, Guid eventId);
+    }
+
+    public interface IPaymentRepository : IAsyncRepository<Payment>
+    {
+        Task<Payment?> GetByTransactionIdAsync(string transactionId);
+    }
 }

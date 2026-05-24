@@ -20,6 +20,9 @@ namespace Tazkara.Domain.Entities
         public Guid OrganizerId { get; set; }
         public Guid CategoryId { get; set; }
 
+        [System.ComponentModel.DataAnnotations.Timestamp]
+        public byte[]? RowVersion { get; set; }
+
         // Navigation properties
         public ApplicationUser? Organizer { get; set; }
         public Category? Category { get; set; }

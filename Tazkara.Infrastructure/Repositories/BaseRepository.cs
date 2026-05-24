@@ -38,7 +38,14 @@ namespace Tazkara.Infrastructure.Repositories
         public async Task UpdateAsync(T entity)
         {
             _dbContext.Entry(entity).State = EntityState.Modified;
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                throw new Tazkara.Application.Exceptions.ConcurrencyException("A concurrency error occurred.", ex);
+            }
         }
 
         public async Task DeleteAsync(T entity)
