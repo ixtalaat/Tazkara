@@ -106,6 +106,15 @@ namespace Tazkara.Infrastructure.Repositories
             return await _dbContext.Tickets
                 .AnyAsync(t => t.UserId == userId && t.EventId == eventId && t.Status != TicketStatus.Cancelled);
         }
+
+        public async Task<List<Ticket>> GetOrganizerTicketsAsync(Guid organizerId)
+        {
+            return await _dbContext.Tickets
+                .Include(t => t.Event)
+                .Include(t => t.Payments)
+                .Where(t => t.Event!.OrganizerId == organizerId)
+                .ToListAsync();
+        }
     }
 
     public class PaymentRepository : BaseRepository<Payment>, IPaymentRepository

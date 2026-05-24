@@ -20,6 +20,7 @@ namespace Tazkara.Application.Interfaces
         Task<Ticket?> GetTicketWithDetailsAsync(Guid id);
         Task<List<Ticket>> GetUserTicketsAsync(Guid userId);
         Task<bool> HasUserBookedEventAsync(Guid userId, Guid eventId);
+        Task<List<Ticket>> GetOrganizerTicketsAsync(Guid organizerId);
     }
 
     public interface IPaymentRepository : IAsyncRepository<Payment>

@@ -18,13 +18,15 @@ using Tazkara.Infrastructure.Data;
 using Tazkara.Infrastructure.Repositories;
 using Tazkara.Infrastructure.Services;
 using Tazkara.Infrastructure.Services.PaymentGateways;
+using Tazkara.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add Serilog
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration)
-                 .WriteTo.Console());
+                 .WriteTo.Console()
+                 .WriteTo.File("Logs/tazkara-log-.txt", rollingInterval: RollingInterval.Day));
 
 // Register Mapster Configuration
 MappingProfile.RegisterMappings();
@@ -93,16 +95,23 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 // Payment Gateways
 builder.Services.AddTransient<PayPalGateway>();
 builder.Services.AddTransient<VodafoneCashGateway>();
 builder.Services.AddScoped<IPaymentGatewayFactory, PaymentGatewayFactory>();
 
+// Configure Global Exception Handling
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 // Configure OpenAPI
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
