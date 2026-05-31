@@ -1,0 +1,30 @@
+services:
+  tazkara-api:
+    image: tazkara-api:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=tazkara-db;Database=TazkaraDb;User Id=sa;Password=YourSecurePassword123!;Trusted_Connection=False;MultipleActiveResultSets=true;TrustServerCertificate=True
+      - JwtSettings__Key=ProductionSecretKeyForTazkaraAppThatIsAtLeast32BytesLong12345!
+      - JwtSettings__Issuer=TazkaraAPI
+      - JwtSettings__Audience=TazkaraClients
+      - CorsSettings__AllowedOrigins__0=http://localhost:3000
+    depends_on:
+      - tazkara-db
+
+  tazkara-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourSecurePassword123!
+    volumes:
+      - mssql-data:/var/opt/mssql
+
+volumes:
+  mssql-data:
