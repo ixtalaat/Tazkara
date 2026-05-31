@@ -77,7 +77,7 @@ namespace Tazkara.Application.Tests
             // Assert
             result.Success.Should().BeTrue();
             result.Data.Should().NotBeNull();
-            result.Data.Status.Should().Be(TicketStatus.Reserved.ToString());
+            result.Data!.Status.Should().Be(TicketStatus.Reserved.ToString());
             result.Data.EventTitle.Should().Be("Test Concert");
             targetEvent.AvailableTickets.Should().Be(9);
             _eventRepositoryMock.Verify(repo => repo.UpdateAsync(targetEvent), Times.Once);
