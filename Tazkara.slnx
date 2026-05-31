@@ -4,4 +4,5 @@
   <Project Path="Tazkara.Domain/Tazkara.Domain.csproj" />
   <Project Path="Tazkara.Infrastructure/Tazkara.Infrastructure.csproj" />
   <Project Path="Tazkara.Shared/Tazkara.Shared.csproj" />
+  <Project Path="Tazkara.Application.Tests/Tazkara.Application.Tests.csproj" />
 </Solution>
