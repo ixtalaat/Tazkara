@@ -69,15 +69,16 @@ export class CreateEventComponent implements OnInit {
   }
 
   loadEvent(id: string): void {
-    this.eventService.getEventById(id).pipe(timeout(10000)).subscribe({
+    this.eventService.getOrganizerEvents().pipe(timeout(10000)).subscribe({
       next: (response) => {
-        if (!response.success || !response.data) {
+        const event = response.data?.find(item => item.id.toLowerCase() === id.toLowerCase());
+        if (!response.success || !event) {
           this.loading = false;
-          this.errorMessage = response.message || 'Unable to load this event.';
+          this.errorMessage = response.message || 'Unable to find this event in your organizer account.';
           return;
         }
         this.loading = false;
-        this.populateForm(response.data);
+        this.populateForm(event);
       },
       error: (error) => {
         this.loading = false;
