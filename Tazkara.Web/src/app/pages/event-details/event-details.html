@@ -1,1 +1,129 @@
-<p>event-details works!</p>
+<div class="event-details-container animated-fade-in">
+  <!-- Back button -->
+  <div class="back-nav">
+    <a routerLink="/" class="btn-back">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      Back to events
+    </a>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="state-container">
+    <div class="spinner"></div>
+    <p class="loading-text">Loading event details...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!loading() && errorMessage() && !event()" class="state-container error-panel glass-panel">
+    <p class="error-text">{{ errorMessage() }}</p>
+    <a routerLink="/" class="btn btn-primary mt-4">Browse Other Events</a>
+  </div>
+
+  <!-- Main Details Page -->
+  <div *ngIf="!loading() && event()" class="details-layout">
+    <!-- Left Column: Details & Description -->
+    <div class="details-main glass-panel">
+      <!-- Simulated Header banner -->
+      <div class="details-banner">
+        <span class="category-badge">{{ event()?.categoryName || 'Event' }}</span>
+        <span class="status-badge badge" [class.badge-success]="event()?.status === 'Published'" [class.badge-warning]="event()?.status === 'Draft'" [class.badge-danger]="event()?.status === 'Cancelled'">
+          {{ event()?.status }}
+        </span>
+      </div>
+
+      <div class="details-content">
+        <h1 class="event-title">{{ event()?.title }}</h1>
+        
+        <!-- Info Grid -->
+        <div class="info-grid">
+          <div class="info-item">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <div>
+              <span class="info-label">Date & Time</span>
+              <span class="info-val">{{ event()?.startDate | date:'medium' }}</span>
+              <span class="info-val-sub">to {{ event()?.endDate | date:'medium' }}</span>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <div>
+              <span class="info-label">Location</span>
+              <span class="info-val">{{ event()?.location }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="event-description">
+          <h3>About the Event</h3>
+          <p>{{ event()?.description }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Booking panel -->
+    <div class="details-sidebar">
+      <div class="booking-card glass-panel">
+        <h3 class="booking-header">Ticket Reservation</h3>
+        
+        <div class="price-section">
+          <span class="price-label">Ticket Price</span>
+          <span class="price-value">{{ event()?.price | currency:'USD':'symbol':'1.0-2' }}</span>
+        </div>
+
+        <!-- Availability progress bar -->
+        <div class="availability-section">
+          <div class="avail-stats">
+            <span>Availability</span>
+            <span class="bold">{{ event()?.availableTickets }} / {{ event()?.capacity }} Left</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" [style.width.%]="((event()?.availableTickets || 0) / (event()?.capacity || 1)) * 100"></div>
+          </div>
+        </div>
+
+        <!-- Feedback Messages -->
+        <div *ngIf="errorMessage()" class="alert-box alert-error">
+          {{ errorMessage() }}
+        </div>
+        <div *ngIf="successMessage()" class="alert-box alert-success">
+          {{ successMessage() }}
+        </div>
+
+        <!-- Reservation Actions -->
+        <div class="actions-section">
+          <ng-container *ngIf="authService.isLoggedIn; else guestActions">
+            <!-- Customer -->
+            <button 
+              *ngIf="authService.isCustomer" 
+              (click)="reserveTicket()" 
+              [disabled]="reserving() || event()?.availableTickets === 0 || event()?.status !== 'Published'" 
+              class="btn btn-primary w-full btn-large">
+              <span *ngIf="!reserving()">Reserve Ticket Now</span>
+              <span *ngIf="reserving()" class="spinner-inline">Reserving...</span>
+            </button>
+
+            <!-- Organizer / Admin warning -->
+            <div *ngIf="!authService.isCustomer" class="role-warning">
+              You are signed in as an <strong>{{ authService.currentUserValue?.role }}</strong>. Please sign in with a Customer account to reserve tickets.
+            </div>
+          </ng-container>
+
+          <ng-template #guestActions>
+            <button (click)="reserveTicket()" class="btn btn-primary w-full btn-large">
+              Sign In to Reserve
+            </button>
+            <p class="guest-helper">You'll need a customer account to claim a ticket reservation.</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
