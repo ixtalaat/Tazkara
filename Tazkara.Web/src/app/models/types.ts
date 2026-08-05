@@ -84,7 +84,7 @@ export interface Ticket {
   ticketNumber: string;
   eventId: string;
   eventTitle: string;
-  eventDate: string;
+  eventStartDate: string;
   eventLocation: string;
   userId: string;
   status: string; // Reserved, Confirmed, Cancelled, Expired

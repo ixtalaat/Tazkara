@@ -39,7 +39,7 @@
           <div class="summary-details">
             <div class="detail-row">
               <span class="label">Date & Time</span>
-              <span class="value">{{ ticket()?.eventDate | date:'medium' }}</span>
+              <span class="value">{{ ticket()?.eventStartDate | date:'medium' }}</span>
             </div>
             <div class="detail-row">
               <span class="label">Location</span>
@@ -183,7 +183,7 @@
               <div class="voucher-info-grid">
                 <div>
                   <span class="voucher-meta-label">DATE & TIME</span>
-                  <span class="voucher-meta-val">{{ ticket()?.eventDate | date:'medium' }}</span>
+                  <span class="voucher-meta-val">{{ ticket()?.eventStartDate | date:'medium' }}</span>
                 </div>
                 <div>
                   <span class="voucher-meta-label">LOCATION</span>
