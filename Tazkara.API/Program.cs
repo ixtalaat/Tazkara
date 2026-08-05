@@ -174,6 +174,16 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+// Apply migrations and add safe, repeatable development data.
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var services = scope.ServiceProvider;
+    var db = services.GetRequiredService<ApplicationDbContext>();
+    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<Role>>();
+    await DatabaseSeeder.SeedAsync(db, userManager, roleManager);
+}
+
 // Setup Exception Handling Middleware
 app.UseExceptionHandler();
 
