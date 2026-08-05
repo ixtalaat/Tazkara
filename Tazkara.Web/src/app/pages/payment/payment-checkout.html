@@ -1,1 +1,230 @@
-<p>payment-checkout works!</p>
+<div class="checkout-container animated-fade-in">
+  <!-- Back button -->
+  <div class="back-nav no-print">
+    <a routerLink="/my-tickets" class="btn-back">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      Back to My Tickets
+    </a>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="state-container no-print">
+    <div class="spinner"></div>
+    <p class="loading-text">Loading checkout details...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!loading() && errorMessage() && flowStep() !== 'simulating_paypal' && flowStep() !== 'simulating_vodafone'" class="state-container error-panel glass-panel no-print">
+    <p class="error-text">{{ errorMessage() }}</p>
+    <a routerLink="/" class="btn btn-primary mt-4">Browse Events</a>
+  </div>
+
+  <!-- Main Checkout Area -->
+  <div *ngIf="!loading() && ticket() && !errorMessage()" class="checkout-layout">
+    
+    <!-- LEFT: Ticket details Summary (Hide on success and print for a cleaner receipt) -->
+    <div *ngIf="flowStep() !== 'payment_success'" class="checkout-main glass-panel no-print">
+      <h3 class="panel-title">Verify Ticket Summary</h3>
+      
+      <div class="ticket-summary-card">
+        <div class="summary-header">
+          <span class="ticket-number">Ticket Reference: #{{ ticket()?.ticketNumber }}</span>
+          <span class="badge badge-reserved">{{ ticket()?.status }}</span>
+        </div>
+        
+        <div class="summary-body">
+          <h2 class="summary-title">{{ ticket()?.eventTitle }}</h2>
+          <div class="summary-details">
+            <div class="detail-row">
+              <span class="label">Date & Time</span>
+              <span class="value">{{ ticket()?.eventDate | date:'medium' }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Location</span>
+              <span class="value">{{ ticket()?.eventLocation }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Price</span>
+              <span class="value highlight">{{ ticket()?.price | currency:'USD':'symbol':'1.0-2' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Dynamic Checkout Steps -->
+    <div class="checkout-sidebar">
+      
+      <!-- STEP 1: Select Provider -->
+      <div *ngIf="flowStep() === 'select_provider'" class="provider-panel glass-panel no-print">
+        <h3 class="panel-title">Choose Payment Method</h3>
+        <p class="panel-subtitle">Select a simulated payment provider to purchase your ticket reservation.</p>
+
+        <div class="provider-options">
+          <!-- PayPal -->
+          <div (click)="initiatePayment(0)" class="provider-card paypal-card" [class.disabled]="processing()">
+            <div class="provider-logo">
+              <span class="logo-pp">Pay<span class="logo-accent-pp">Pal</span></span>
+            </div>
+            <p class="provider-desc">Pay securely using your simulated PayPal account.</p>
+          </div>
+
+          <!-- Vodafone Cash -->
+          <div (click)="initiatePayment(1)" class="provider-card vodafone-card" [class.disabled]="processing()">
+            <div class="provider-logo">
+              <span class="logo-vf">vodafone <span class="logo-accent-vf">cash</span></span>
+            </div>
+            <p class="provider-desc">Pay instantly using simulated Vodafone Cash e-wallet.</p>
+          </div>
+        </div>
+
+        <div *ngIf="processing()" class="payment-loading">
+          <div class="spinner-inline">Initiating payment session...</div>
+        </div>
+      </div>
+
+      <!-- STEP 2A: Simulate PayPal Interface -->
+      <div *ngIf="flowStep() === 'simulating_paypal'" class="simulated-gateway-card paypal-theme no-print">
+        <div class="gateway-header">
+          <span class="brand-text">Pay<span class="accent-text">Pal</span></span>
+          <span class="amount-badge">{{ ticket()?.price | currency }}</span>
+        </div>
+        
+        <div class="gateway-body">
+          <h4 class="gateway-title">Log in to your PayPal Account</h4>
+          <p class="gateway-desc">This is a sandbox simulation environment.</p>
+
+          <div *ngIf="errorMessage()" class="alert-box alert-error mb-4">
+            {{ errorMessage() }}
+          </div>
+
+          <form (submit)="confirmSimulatedPayment()" class="gateway-form">
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" [(ngModel)]="paypalEmail" name="email" required placeholder="name@domain.com" class="form-control gateway-input" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input type="password" [(ngModel)]="paypalPassword" name="password" required placeholder="••••••••" class="form-control gateway-input" />
+            </div>
+
+            <div class="gateway-actions">
+              <button type="submit" [disabled]="processing()" class="btn btn-paypal-primary w-full">
+                <span *ngIf="!processing()">Pay Now</span>
+                <span *ngIf="processing()" class="spinner-inline">Authorizing...</span>
+              </button>
+              <button type="button" (click)="cancelCheckoutSimulation()" [disabled]="processing()" class="btn btn-paypal-secondary w-full">
+                Cancel & Return
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- STEP 2B: Simulate Vodafone Cash Interface -->
+      <div *ngIf="flowStep() === 'simulating_vodafone'" class="simulated-gateway-card vodafone-theme no-print">
+        <div class="gateway-header">
+          <span class="brand-text">vodafone <span class="accent-text">cash</span></span>
+          <span class="amount-badge">{{ ticket()?.price | currency }}</span>
+        </div>
+
+        <div class="gateway-body">
+          <h4 class="gateway-title">E-Wallet Payment authorization</h4>
+          <p class="gateway-desc">This is a sandbox simulation environment.</p>
+
+          <div *ngIf="errorMessage()" class="alert-box alert-error mb-4">
+            {{ errorMessage() }}
+          </div>
+
+          <form (submit)="confirmSimulatedPayment()" class="gateway-form">
+            <div class="form-group">
+              <label class="form-label">Mobile Wallet Number</label>
+              <input type="text" [(ngModel)]="vodafoneNumber" name="phone" required placeholder="010XXXXXXXX" class="form-control gateway-input" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">6-Digit Wallet PIN</label>
+              <input type="password" [(ngModel)]="vodafonePin" name="pin" required placeholder="••••••" maxlength="6" class="form-control gateway-input" />
+            </div>
+
+            <div class="gateway-actions">
+              <button type="submit" [disabled]="processing()" class="btn btn-vodafone-primary w-full">
+                <span *ngIf="!processing()">Confirm & Pay</span>
+                <span *ngIf="processing()" class="spinner-inline">Verifying...</span>
+              </button>
+              <button type="button" (click)="cancelCheckoutSimulation()" [disabled]="processing()" class="btn btn-vodafone-secondary w-full">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- STEP 3: Payment Success / Ticket Voucher -->
+      <div *ngIf="flowStep() === 'payment_success'" class="success-panel">
+        
+        <!-- Voucher Ticket Printable -->
+        <div class="ticket-voucher glass-panel">
+          <div class="voucher-stub">
+            <div class="voucher-logo">TAZ<span class="logo-accent">KARA</span></div>
+            <span class="voucher-status badge badge-published">CONFIRMED TICKET</span>
+          </div>
+
+          <div class="voucher-body">
+            <div class="voucher-left">
+              <span class="voucher-meta-label">EVENT</span>
+              <h2 class="voucher-title">{{ ticket()?.eventTitle }}</h2>
+
+              <div class="voucher-info-grid">
+                <div>
+                  <span class="voucher-meta-label">DATE & TIME</span>
+                  <span class="voucher-meta-val">{{ ticket()?.eventDate | date:'medium' }}</span>
+                </div>
+                <div>
+                  <span class="voucher-meta-label">LOCATION</span>
+                  <span class="voucher-meta-val">{{ ticket()?.eventLocation }}</span>
+                </div>
+              </div>
+
+              <div class="voucher-info-grid">
+                <div>
+                  <span class="voucher-meta-label">TICKET HOLDER</span>
+                  <span class="voucher-meta-val">{{ ticket()?.ticketNumber }}</span>
+                </div>
+                <div>
+                  <span class="voucher-meta-label">PRICE PAID</span>
+                  <span class="voucher-meta-val price">{{ ticket()?.price | currency }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="voucher-right">
+              <!-- Simulated Barcode/QR -->
+              <div class="simulated-qr">
+                <div class="qr-squares">
+                  <div class="qr-row" *ngFor="let r of [1,2,3,4,5,6,7,8]">
+                    <span *ngFor="let c of [1,2,3,4,5,6,7,8]" class="qr-dot" [class.fill]="(r+c)%3===0 || (r*c)%5===0"></span>
+                  </div>
+                </div>
+                <span class="qr-code-txt">#{{ ticket()?.ticketNumber }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Success navigation actions (Hidden during print) -->
+        <div class="success-actions no-print">
+          <button (click)="printTicket()" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            Print Ticket Voucher
+          </button>
+          <a routerLink="/my-tickets" class="btn btn-secondary">Go to My Tickets</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

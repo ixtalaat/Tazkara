@@ -1,1 +1,469 @@
-/* Payment checkout styles */
+.checkout-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Layout */
+.checkout-layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .checkout-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel-title {
+  font-size: 1.25rem;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 12px;
+}
+.panel-subtitle {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+/* Summary Card */
+.checkout-main {
+  padding: 24px;
+}
+.ticket-summary-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed var(--border-color);
+  padding-bottom: 12px;
+}
+.ticket-number {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+.summary-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 16px;
+}
+.summary-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+.detail-row .label {
+  color: var(--text-dimmed);
+  font-weight: 600;
+}
+.detail-row .value {
+  color: #fff;
+  font-weight: 700;
+}
+.detail-row .value.highlight {
+  color: var(--accent-cyan);
+  font-size: 1.1rem;
+}
+
+/* Provider Select panel */
+.provider-panel {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+.provider-options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.provider-card {
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.02);
+  transition: var(--transition-normal);
+}
+.provider-card:hover {
+  transform: translateY(-2px);
+}
+.provider-card.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+.provider-logo {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+}
+.provider-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Provider Branding text */
+.logo-pp {
+  color: #003087;
+}
+.logo-accent-pp {
+  color: #0079C1;
+}
+.logo-vf {
+  color: #E60000;
+  text-transform: lowercase;
+}
+.logo-accent-vf {
+  color: #fff;
+  font-weight: 400;
+  background: #E60000;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  margin-left: 2px;
+}
+
+.paypal-card:hover {
+  border-color: #0079C1;
+  background: rgba(0, 121, 193, 0.05);
+}
+.vodafone-card:hover {
+  border-color: #E60000;
+  background: rgba(230, 0, 0, 0.05);
+}
+
+.payment-loading {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Simulated gateways */
+.simulated-gateway-card {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid transparent;
+}
+.gateway-header {
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.gateway-header .brand-text {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.3rem;
+}
+.amount-badge {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.gateway-body {
+  padding: 24px;
+  background: #0f1322;
+}
+.gateway-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.gateway-desc {
+  color: var(--text-dimmed);
+  font-size: 0.8rem;
+  margin-bottom: 20px;
+}
+.gateway-input {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.gateway-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+.mb-4 {
+  margin-bottom: 16px;
+}
+
+/* Theme details for PayPal */
+.paypal-theme {
+  border-color: #0079C1;
+}
+.paypal-theme .gateway-header {
+  background: #003087;
+  color: #fff;
+}
+.paypal-theme .brand-text {
+  color: #fff;
+}
+.paypal-theme .accent-text {
+  color: #0079C1;
+}
+.btn-paypal-primary {
+  background: #FFC439;
+  color: #111;
+  font-weight: 700;
+  border: none;
+  border-radius: 20px;
+  padding: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-paypal-primary:hover {
+  background: #e5af30;
+}
+.btn-paypal-secondary {
+  background: transparent;
+  color: #0079C1;
+  font-weight: 600;
+  border: 1px solid #0079C1;
+  border-radius: 20px;
+  padding: 12px;
+  cursor: pointer;
+}
+.btn-paypal-secondary:hover {
+  background: rgba(0, 121, 193, 0.08);
+}
+
+/* Theme details for Vodafone Cash */
+.vodafone-theme {
+  border-color: #E60000;
+}
+.vodafone-theme .gateway-header {
+  background: #E60000;
+  color: #fff;
+}
+.vodafone-theme .brand-text {
+  color: #fff;
+}
+.vodafone-theme .accent-text {
+  font-weight: 400;
+  background: #fff;
+  color: #E60000;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+}
+.btn-vodafone-primary {
+  background: #E60000;
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+}
+.btn-vodafone-primary:hover {
+  background: #b30000;
+}
+.btn-vodafone-secondary {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+}
+.btn-vodafone-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Success panel and ticket voucher */
+.success-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.success-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+.success-actions svg {
+  width: 20px;
+  height: 20px;
+}
+
+.ticket-voucher {
+  background: #0f1429;
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+}
+.voucher-stub {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(168, 85, 247, 0.25) 100%);
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px dashed rgba(255, 255, 255, 0.15);
+}
+.voucher-logo {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.3rem;
+  letter-spacing: -0.01em;
+}
+.voucher-logo .logo-accent {
+  background: var(--grad-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.voucher-body {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  gap: 20px;
+  align-items: center;
+}
+@media (max-width: 480px) {
+  .voucher-body {
+    grid-template-columns: 1fr;
+  }
+}
+.voucher-left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.voucher-meta-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-dimmed);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: block;
+  margin-bottom: 2px;
+}
+.voucher-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.3;
+}
+.voucher-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.voucher-meta-val {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+}
+.voucher-meta-val.price {
+  color: var(--accent-cyan);
+}
+.voucher-right {
+  display: flex;
+  justify-content: center;
+}
+
+/* Simulated QR */
+.simulated-qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.qr-squares {
+  width: 90px;
+  height: 90px;
+  background: #fff;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-radius: 6px;
+}
+.qr-row {
+  display: flex;
+  gap: 2px;
+  flex-grow: 1;
+}
+.qr-dot {
+  flex-grow: 1;
+  background: #eee;
+  border-radius: 1px;
+}
+.qr-dot.fill {
+  background: #000;
+}
+.qr-code-txt {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  color: var(--text-dimmed);
+}
+
+/* Printing styles */
+@media print {
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    background-image: none !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .checkout-layout {
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+  }
+  .checkout-sidebar {
+    width: 100% !important;
+  }
+  .ticket-voucher {
+    border: 2px dashed #000 !important;
+    background: #fff !important;
+    color: #000 !important;
+    box-shadow: none !important;
+  }
+  .voucher-stub {
+    background: #f0f0f0 !important;
+    border-bottom: 2px dashed #000 !important;
+  }
+  .voucher-title {
+    color: #000 !important;
+  }
+  .voucher-meta-val {
+    color: #000 !important;
+  }
+  .voucher-logo .logo-accent {
+    -webkit-text-fill-color: initial !important;
+    color: #000 !important;
+  }
+}
