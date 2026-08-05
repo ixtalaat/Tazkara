@@ -22,9 +22,11 @@ export interface User {
 }
 
 export interface AuthResponse {
+  id: string;
   token: string;
   email: string;
   role: string;
+  roles: string[];
   firstName: string;
   lastName: string;
 }

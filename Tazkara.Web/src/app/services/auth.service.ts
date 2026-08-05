@@ -42,11 +42,11 @@ export class AuthService {
         if (response.success && response.data) {
           const authData = response.data;
           const user: User = {
-            id: '', // Empty in login DTO, but role & token are here
+            id: authData.id,
             firstName: authData.firstName,
             lastName: authData.lastName,
             email: authData.email,
-            role: authData.role
+            role: authData.roles?.[0] || authData.role || ''
           };
           localStorage.setItem('tazkara_token', authData.token);
           localStorage.setItem('tazkara_user', JSON.stringify(user));
@@ -73,10 +73,27 @@ export class AuthService {
     if (token && userJson) {
       try {
         const user = JSON.parse(userJson) as User;
+        // Older sessions were stored from an AuthResponse that exposed `roles`
+        // rather than a single `role`. Recover the role from the JWT so an
+        // already logged-in customer does not need to clear browser storage.
+        if (!user.role) {
+          user.role = this.readRoleFromToken(token) || '';
+        }
         this.currentUserSubject.next(user);
       } catch (e) {
         this.logout();
       }
+    }
+  }
+
+  private readRoleFromToken(token: string): string | null {
+    try {
+      const payload = token.split('.')[1];
+      const claims = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+      const roleClaim = claims['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ?? claims.role;
+      return Array.isArray(roleClaim) ? roleClaim[0] ?? null : roleClaim ?? null;
+    } catch {
+      return null;
     }
   }
 }
