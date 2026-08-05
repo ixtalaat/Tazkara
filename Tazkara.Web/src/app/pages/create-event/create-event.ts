@@ -4,6 +4,7 @@ import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Va
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Category, CreateEventRequest, Event, UpdateEventRequest } from '../../models/types';
 import { EventService } from '../../services/event.service';
+import { timeout } from 'rxjs';
 
 function endAfterStart(control: AbstractControl): ValidationErrors | null {
   const startDate = control.get('startDate')?.value;
@@ -68,7 +69,7 @@ export class CreateEventComponent implements OnInit {
   }
 
   loadEvent(id: string): void {
-    this.eventService.getEventById(id).subscribe({
+    this.eventService.getEventById(id).pipe(timeout(10000)).subscribe({
       next: (response) => {
         if (!response.success || !response.data) {
           this.loading = false;
@@ -80,7 +81,9 @@ export class CreateEventComponent implements OnInit {
       },
       error: (error) => {
         this.loading = false;
-        this.errorMessage = error.error?.message || 'Unable to load this event.';
+        this.errorMessage = error.name === 'TimeoutError'
+          ? 'Loading the event timed out. Check that the API is running and try again.'
+          : error.error?.message || 'Unable to load this event.';
       }
     });
   }
