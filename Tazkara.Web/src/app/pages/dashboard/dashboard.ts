@@ -140,8 +140,15 @@ export class OrganizerDashboardComponent implements OnInit {
     this.router.navigate(['/dashboard/events/edit', eventId]);
   }
 
-  statusClass(status: string): string {
-    return `badge-${status.toLowerCase()}`;
+  statusLabel(status: string | number): string {
+    if (typeof status === 'number') {
+      return ['Draft', 'Published', 'Cancelled', 'Completed'][status] ?? 'Unknown';
+    }
+    return status;
+  }
+
+  statusClass(status: string | number): string {
+    return `badge-${this.statusLabel(status).toLowerCase()}`;
   }
 
   ticketProgress(sold: number, capacity: number): number {

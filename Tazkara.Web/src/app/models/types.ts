@@ -122,7 +122,7 @@ export interface EventStat {
   eventId: string;
   title: string;
   startDate: string;
-  status: string;
+  status: string | number;
   price: number;
   capacity: number;
   ticketsSold: number;

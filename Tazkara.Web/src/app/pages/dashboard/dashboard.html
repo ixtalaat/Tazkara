@@ -48,12 +48,11 @@
             <td><div class="progress-cell"><span>{{ stat.ticketsSold }} / {{ stat.capacity }}</span><div class="progress-bar-bg"><div class="progress-bar-fill" [style.width.%]="ticketProgress(stat.ticketsSold, stat.capacity)"></div></div></div></td>
             <td><div class="tickets-split-cell"><span>{{ stat.ticketsReserved }} reserved</span><span>{{ stat.ticketsAvailable }} available</span></div></td>
             <td class="revenue-value">{{ stat.revenue | currency }}</td>
-            <td><span class="badge" [class]="statusClass(stat.status)">{{ stat.status }}</span></td>
-            <td><div class="actions-cell">
+            <td><span class="badge" [class]="statusClass(stat.status)">{{ statusLabel(stat.status) }}</span></td><td><div class="actions-cell">
               <button type="button" class="btn btn-secondary btn-icon-sm" (click)="editEvent(stat.eventId)" [disabled]="actioningId() !== null">Edit</button>
-              <button *ngIf="stat.status === 'Draft'" type="button" class="btn btn-secondary btn-icon-sm success-hover" (click)="publishEvent(stat.eventId)" [disabled]="actioningId() !== null">{{ actioningId() === stat.eventId ? 'Publishing…' : 'Publish' }}</button>
-              <button *ngIf="stat.status !== 'Cancelled'" type="button" class="btn btn-secondary btn-icon-sm danger-hover" (click)="cancelEvent(stat.eventId)" [disabled]="actioningId() !== null">Cancel</button>
-              <button *ngIf="stat.status === 'Draft'" type="button" class="btn btn-secondary btn-icon-sm danger-hover" (click)="deleteEvent(stat.eventId)" [disabled]="actioningId() !== null">Delete</button>
+              <button *ngIf="statusLabel(stat.status) === 'Draft'" type="button" class="btn btn-secondary btn-icon-sm success-hover" (click)="publishEvent(stat.eventId)" [disabled]="actioningId() !== null">{{ actioningId() === stat.eventId ? 'Publishing…' : 'Publish' }}</button>
+              <button *ngIf="statusLabel(stat.status) !== 'Cancelled'" type="button" class="btn btn-secondary btn-icon-sm danger-hover" (click)="cancelEvent(stat.eventId)" [disabled]="actioningId() !== null">Cancel</button>
+              <button *ngIf="statusLabel(stat.status) === 'Draft'" type="button" class="btn btn-secondary btn-icon-sm danger-hover" (click)="deleteEvent(stat.eventId)" [disabled]="actioningId() !== null">Delete</button>
             </div></td>
           </tr>
         </tbody>
