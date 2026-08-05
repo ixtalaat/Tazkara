@@ -1,1 +1,63 @@
-<p>dashboard works!</p>
+<div class="dashboard-container animated-fade-in">
+  <div class="header-section">
+    <div>
+      <h1 class="page-title">Organizer <span class="logo-accent">Dashboard</span></h1>
+      <p class="page-subtitle">Track sales performance and manage your events.</p>
+    </div>
+    <a routerLink="/dashboard/events/create" class="btn btn-primary">Create event</a>
+  </div>
+
+  <div *ngIf="loading()" class="state-container">
+    <div class="spinner"></div>
+    <p class="loading-text">Loading organizer metrics...</p>
+  </div>
+
+  <div *ngIf="errorMessage()" class="alert-box alert-error">
+    {{ errorMessage() }}
+    <button type="button" class="retry-button" (click)="loadDashboardData()">Try again</button>
+  </div>
+
+  <ng-container *ngIf="!loading() && dashboardData() as dashboard">
+    <section class="metrics-grid" aria-label="Event performance metrics">
+      <article class="metric-card glass-panel">
+        <span class="metric-label">Total events</span>
+        <strong class="metric-value">{{ dashboard.totalEvents }}</strong>
+      </article>
+      <article class="metric-card glass-panel">
+        <span class="metric-label">Tickets sold</span>
+        <strong class="metric-value">{{ dashboard.totalTicketsSold }}</strong>
+      </article>
+      <article class="metric-card glass-panel">
+        <span class="metric-label">Total revenue</span>
+        <strong class="metric-value revenue-value">{{ dashboard.totalRevenue | currency }}</strong>
+      </article>
+    </section>
+
+    <section *ngIf="dashboard.eventStats.length === 0" class="state-container empty-panel glass-panel">
+      <h2>No events created yet</h2>
+      <p class="text-muted">Create an event draft, then publish it when it is ready for attendees.</p>
+      <a routerLink="/dashboard/events/create" class="btn btn-primary">Create your first event</a>
+    </section>
+
+    <section *ngIf="dashboard.eventStats.length > 0" class="events-table-wrapper glass-panel">
+      <table class="events-table">
+        <thead><tr><th>Event</th><th>Sales</th><th>Reservations</th><th>Revenue</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let stat of dashboard.eventStats">
+            <td><div class="event-cell-info"><strong>{{ stat.title }}</strong><span>{{ stat.startDate | date:'mediumDate' }} · {{ stat.price | currency }}</span></div></td>
+            <td><div class="progress-cell"><span>{{ stat.ticketsSold }} / {{ stat.capacity }}</span><div class="progress-bar-bg"><div class="progress-bar-fill" [style.width.%]="ticketProgress(stat.ticketsSold, stat.capacity)"></div></div></div></td>
+            <td><div class="tickets-split-cell"><span>{{ stat.ticketsReserved }} reserved</span><span>{{ stat.ticketsAvailable }} available</span></div></td>
+            <td class="revenue-value">{{ stat.revenue | currency }}</td>
+            <td><span class="badge" [class]="statusClass(stat.status)">{{ stat.status }}</span></td>
+            <td><div class="actions-cell">
+              <button type="button" class="btn btn-secondary btn-icon-sm" (click)="editEvent(stat.eventId)" [disabled]="actioningId() !== null">Edit</button>
+              <button *ngIf="stat.status === 'Draft'" type="button" class="btn btn-secondary btn-icon-sm success-hover" (click)="publishEvent(stat.eventId)" [disabled]="actioningId() !== null">{{ actioningId() === stat.eventId ? 'Publishing…' : 'Publish' }}</button>
+              <button *ngIf="stat.status !== 'Cancelled'" type="button" class="btn btn-secondary btn-icon-sm danger-hover" (click)="cancelEvent(stat.eventId)" [disabled]="actioningId() !== null">Cancel</button>
+              <button *ngIf="stat.status === 'Draft'" type="button" class="btn btn-secondary btn-icon-sm danger-hover" (click)="deleteEvent(stat.eventId)" [disabled]="actioningId() !== null">Delete</button>
+            </div></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </ng-container>
+</div>

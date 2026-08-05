@@ -117,8 +117,10 @@ export interface PaymentVerificationResponse {
 }
 
 export interface EventStat {
-  id: string;
+  eventId: string;
   title: string;
+  startDate: string;
+  status: string;
   price: number;
   capacity: number;
   ticketsSold: number;

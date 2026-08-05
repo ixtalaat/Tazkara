@@ -1,1 +1,31 @@
-/* Dashboard styles */
+.dashboard-container { display: flex; flex-direction: column; gap: 24px; }
+.header-section { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.page-title { font-size: 2rem; }
+.logo-accent { background: var(--grad-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.page-subtitle, .text-muted, .event-cell-info span, .tickets-split-cell { color: var(--text-muted); }
+.metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.metric-card { padding: 22px; display: grid; gap: 6px; }
+.metric-label { color: var(--text-muted); font-size: .85rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.metric-value { font-family: var(--font-display); font-size: 2rem; }
+.revenue-value { color: var(--accent-cyan); font-weight: 700; }
+.events-table-wrapper { overflow-x: auto; }
+.events-table { width: 100%; border-collapse: collapse; min-width: 900px; }
+th, td { padding: 16px 20px; text-align: left; border-bottom: 1px solid var(--border-color); }
+th { color: var(--text-dimmed); font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; }
+tbody tr:last-child td { border-bottom: 0; }
+.event-cell-info, .progress-cell, .tickets-split-cell { display: flex; flex-direction: column; gap: 5px; }
+.event-cell-info strong { color: #fff; }
+.progress-cell { min-width: 110px; color: var(--text-muted); font-size: .85rem; }
+.progress-bar-bg { height: 6px; background: rgba(255,255,255,.08); border-radius: 99px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: var(--grad-primary); border-radius: inherit; }
+.tickets-split-cell { font-size: .82rem; }
+.tickets-split-cell span:last-child { color: var(--accent-emerald); }
+.actions-cell { display: flex; flex-wrap: wrap; gap: 7px; }
+.btn-icon-sm { padding: 6px 10px; font-size: .78rem; }
+.success-hover:hover { border-color: var(--accent-emerald); color: var(--accent-emerald); }
+.danger-hover:hover { border-color: var(--accent-rose); color: var(--accent-rose); }
+.alert-box { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 13px 16px; border-radius: 10px; }
+.alert-error { color: var(--accent-rose); background: rgba(244,63,94,.08); border: 1px solid rgba(244,63,94,.2); }
+.retry-button { color: inherit; border: 0; background: none; cursor: pointer; font-weight: 700; text-decoration: underline; }
+.empty-panel { gap: 14px; }
+@media (max-width: 640px) { .header-section { align-items: flex-start; flex-direction: column; } .metrics-grid { grid-template-columns: 1fr; } }
