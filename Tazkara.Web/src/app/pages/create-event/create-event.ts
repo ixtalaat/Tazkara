@@ -26,7 +26,9 @@ export class CreateEventComponent implements OnInit {
   readonly eventId = this.route.snapshot.paramMap.get('id');
   readonly isEditMode = !!this.eventId;
   categories: Category[] = [];
-  loading = true;
+  // Categories load independently so a slow/unavailable category request
+  // never prevents the event form itself from rendering.
+  loading = !!this.eventId;
   submitting = false;
   errorMessage = '';
 
@@ -52,11 +54,9 @@ export class CreateEventComponent implements OnInit {
     this.eventService.getCategories().subscribe({
       next: (response) => {
         this.categories = response.data ?? [];
-        this.loading = false;
         if (!response.success) this.errorMessage = response.message || 'Unable to load categories.';
       },
       error: (error) => {
-        this.loading = false;
         this.errorMessage = error.error?.message || 'Unable to load categories.';
       }
     });
@@ -66,12 +66,17 @@ export class CreateEventComponent implements OnInit {
     this.eventService.getEventById(id).subscribe({
       next: (response) => {
         if (!response.success || !response.data) {
+          this.loading = false;
           this.errorMessage = response.message || 'Unable to load this event.';
           return;
         }
+        this.loading = false;
         this.populateForm(response.data);
       },
-      error: (error) => this.errorMessage = error.error?.message || 'Unable to load this event.'
+      error: (error) => {
+        this.loading = false;
+        this.errorMessage = error.error?.message || 'Unable to load this event.';
+      }
     });
   }
 
