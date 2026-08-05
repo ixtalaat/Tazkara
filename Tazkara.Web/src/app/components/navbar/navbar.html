@@ -1,0 +1,29 @@
+<header class="navbar-header">
+  <div class="navbar-container">
+    <a routerLink="/" class="navbar-brand">
+      <span class="logo-text">TAZ<span class="logo-accent">KARA</span></span>
+    </a>
+
+    <nav class="navbar-links">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Browse Events</a>
+      
+      <!-- Customer Links -->
+      <a *ngIf="authService.isCustomer" routerLink="/my-tickets" routerLinkActive="active" class="nav-link">My Tickets</a>
+
+      <!-- Organizer Links -->
+      <a *ngIf="authService.isOrganizer" routerLink="/dashboard" routerLinkActive="active" class="nav-link">Organizer Dashboard</a>
+    </nav>
+
+    <div class="navbar-actions">
+      <ng-container *ngIf="authService.currentUser$ | async as user; else guestTpl">
+        <span class="user-greeting">Hi, {{ user.firstName }}</span>
+        <button (click)="logout()" class="btn btn-secondary btn-sm">Sign Out</button>
+      </ng-container>
+      
+      <ng-template #guestTpl>
+        <a routerLink="/login" class="nav-link login-link">Sign In</a>
+        <a routerLink="/register" class="btn btn-primary btn-sm">Get Tickets</a>
+      </ng-template>
+    </div>
+  </div>
+</header>
