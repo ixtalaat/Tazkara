@@ -11,16 +11,26 @@ namespace Tazkara.Infrastructure.Data;
 /// </summary>
 public static class DatabaseSeeder
 {
-    public const string AdminEmail = "admin@tazkara.local";
-    public const string AdminPassword = "Admin@123";
-    public const string OrganizerEmail = "organizer@tazkara.local";
-    public const string OrganizerPassword = "Organizer@123";
+    public sealed class Options
+    {
+        public bool Enabled { get; set; }
+        public string AdminEmail { get; set; } = string.Empty;
+        public string AdminPassword { get; set; } = string.Empty;
+        public string OrganizerEmail { get; set; } = string.Empty;
+        public string OrganizerPassword { get; set; } = string.Empty;
+    }
 
     public static async Task SeedAsync(
         ApplicationDbContext db,
         UserManager<ApplicationUser> userManager,
-        RoleManager<Role> roleManager)
+        RoleManager<Role> roleManager,
+        Options options)
     {
+        if (!options.Enabled) return;
+        if (string.IsNullOrWhiteSpace(options.AdminEmail) || string.IsNullOrWhiteSpace(options.AdminPassword) ||
+            string.IsNullOrWhiteSpace(options.OrganizerEmail) || string.IsNullOrWhiteSpace(options.OrganizerPassword))
+            throw new InvalidOperationException("DatabaseSeed credentials must be configured when DatabaseSeed:Enabled is true.");
+
         await db.Database.MigrateAsync();
 
         foreach (var roleName in new[] { "Admin", "Organizer", "Customer" })
@@ -33,9 +43,9 @@ public static class DatabaseSeeder
         }
 
         await EnsureUserAsync(
-            userManager, AdminEmail, AdminPassword, "Talaat", "Tazkara", "Admin");
+            userManager, options.AdminEmail, options.AdminPassword, "Talaat", "Tazkara", "Admin");
         var organizer = await EnsureUserAsync(
-            userManager, OrganizerEmail, OrganizerPassword, "Mariam", "Egypt Events", "Organizer");
+            userManager, options.OrganizerEmail, options.OrganizerPassword, "Mariam", "Egypt Events", "Organizer");
 
         var categories = new Dictionary<string, Category>();
         foreach (var name in new[]
