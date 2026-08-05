@@ -4,6 +4,9 @@ import { CurrencyPipe, DatePipe, NgFor, NgIf } from '@angular/common';
 import { DashboardService } from '../../services/dashboard.service';
 import { EventService } from '../../services/event.service';
 import { OrganizerDashboardResponse } from '../../models/types';
+import { Event } from '../../models/types';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-organizer-dashboard',
@@ -29,11 +32,14 @@ export class OrganizerDashboardComponent implements OnInit {
   loadDashboardData(): void {
     this.loading.set(true);
     this.errorMessage.set('');
-    this.dashboardService.getOrganizerDashboard().subscribe({
-      next: (res) => {
+    forkJoin({
+      dashboard: this.dashboardService.getOrganizerDashboard(),
+      events: this.eventService.getOrganizerEvents().pipe(catchError(() => of(null)))
+    }).subscribe({
+      next: ({ dashboard: res, events }) => {
         this.loading.set(false);
         if (res.success && res.data) {
-          this.dashboardData.set(res.data);
+          this.dashboardData.set(this.mergeEventDetails(res.data, events?.data ?? []));
         } else {
           this.errorMessage.set(res.message || 'Failed to load dashboard metrics.');
         }
@@ -43,6 +49,27 @@ export class OrganizerDashboardComponent implements OnInit {
         this.errorMessage.set(err.error?.message || 'Error loading dashboard metrics.');
       }
     });
+  }
+
+  private mergeEventDetails(data: OrganizerDashboardResponse, events: Event[]): OrganizerDashboardResponse {
+    const byId = new Map(events.map(event => [event.id.toLowerCase(), event]));
+    return {
+      ...data,
+      eventStats: data.eventStats.map((stat, index) => {
+        const event = stat.eventId ? byId.get(stat.eventId.toLowerCase()) : events[index];
+        if (!event) return stat;
+        return {
+          ...stat,
+          eventId: stat.eventId || event.id,
+          title: stat.title || event.title,
+          startDate: stat.startDate || event.startDate,
+          status: stat.status || event.status,
+          price: stat.price || event.price,
+          capacity: stat.capacity || event.capacity,
+          ticketsAvailable: stat.ticketsAvailable ?? event.availableTickets
+        };
+      })
+    };
   }
 
   publishEvent(eventId: string): void {
