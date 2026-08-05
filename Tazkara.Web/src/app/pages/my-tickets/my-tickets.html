@@ -1,1 +1,118 @@
-<p>my-tickets works!</p>
+<div class="my-tickets-container animated-fade-in">
+  <div class="header-section">
+    <div>
+      <h1 class="page-title">My Ticket <span class="logo-accent">Reservations</span></h1>
+      <p class="page-subtitle">Manage your ticket bookings, complete pending payments, or view your confirmed entry vouchers.</p>
+    </div>
+    <a routerLink="/" class="btn btn-secondary">Browse More Events</a>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="state-container">
+    <div class="spinner"></div>
+    <p class="loading-text">Loading your tickets...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!loading() && errorMessage()" class="state-container error-panel glass-panel">
+    <p class="error-text">{{ errorMessage() }}</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading() && tickets().length === 0 && !errorMessage()" class="state-container empty-panel glass-panel">
+    <svg class="empty-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-3-12h.008v.008H13.5V6zm0 3h.008v.008H13.5V9zm0 3h.008v.008H13.5v-.008zm0 3h.008v.008H13.5v-.008zM5.625 18H18.75a.625.625 0 00.625-.625V5.625a.625.625 0 00-.625-.625H5.625a.625.625 0 00-.625.625v11.75c0 .345.28.625.625.625z" />
+    </svg>
+    <h3>No Tickets Booked Yet</h3>
+    <p class="text-muted">You haven't reserved or purchased any tickets yet. Start exploring live events now!</p>
+    <a routerLink="/" class="btn btn-primary mt-4">Browse Events</a>
+  </div>
+
+  <!-- Tickets List Grid -->
+  <div *ngIf="!loading() && tickets().length > 0" class="tickets-grid">
+    <div *ngFor="let ticket of tickets()" class="ticket-card glass-panel" [class.cancelled]="ticket.status === 'Cancelled'" [class.expired]="ticket.status === 'Expired'">
+      
+      <!-- Top banner design -->
+      <div class="ticket-header">
+        <div class="ticket-ref">
+          <span class="ref-label">REF #</span>
+          <span class="ref-val">{{ ticket.ticketNumber }}</span>
+        </div>
+
+        <div class="badges-row">
+          <!-- Ticket Status Badge -->
+          <span class="badge" 
+            [class.badge-success]="ticket.status === 'Confirmed'" 
+            [class.badge-reserved]="ticket.status === 'Reserved'" 
+            [class.badge-cancelled]="ticket.status === 'Cancelled'" 
+            [class.badge-expired]="ticket.status === 'Expired'">
+            {{ ticket.status }}
+          </span>
+
+          <!-- Payment Status Badge -->
+          <span class="badge"
+            [class.badge-published]="ticket.paymentStatus === 'Paid'"
+            [class.badge-draft]="ticket.paymentStatus === 'Pending'"
+            [class.badge-cancelled]="ticket.paymentStatus === 'Refunded'"
+            [class.badge-expired]="ticket.paymentStatus === 'Failed'">
+            {{ ticket.paymentStatus }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Main card body -->
+      <div class="ticket-body">
+        <h3 class="event-title">{{ ticket.eventTitle }}</h3>
+        
+        <div class="ticket-details">
+          <div class="detail-row">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="detail-icon">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span class="detail-text">{{ ticket.eventDate | date:'medium' }}</span>
+          </div>
+
+          <div class="detail-row">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="detail-icon">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span class="detail-text">{{ ticket.eventLocation }}</span>
+          </div>
+
+          <div class="detail-row price-row">
+            <span class="detail-label">Price Paid:</span>
+            <span class="price-val">{{ ticket.price | currency }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="ticket-footer">
+        <!-- If pending reservation -->
+        <ng-container *ngIf="ticket.status === 'Reserved' && ticket.paymentStatus === 'Pending'">
+          <button (click)="payTicket(ticket.id)" [disabled]="cancellingId() === ticket.id" class="btn btn-primary btn-sm flex-grow">
+            Pay Now
+          </button>
+          <button (click)="cancelReservation(ticket.id)" [disabled]="cancellingId() === ticket.id" class="btn btn-secondary btn-sm">
+            <span *ngIf="cancellingId() !== ticket.id">Cancel</span>
+            <span *ngIf="cancellingId() === ticket.id" class="spinner-inline-sm"></span>
+          </button>
+        </ng-container>
+
+        <!-- If paid/confirmed -->
+        <ng-container *ngIf="ticket.status === 'Confirmed' && ticket.paymentStatus === 'Paid'">
+          <a [routerLink]="['/payment/checkout']" [queryParams]="{ ticketId: ticket.id }" class="btn btn-primary btn-sm w-full">
+            View / Print Ticket Voucher
+          </a>
+        </ng-container>
+
+        <!-- Void tickets -->
+        <div *ngIf="ticket.status === 'Cancelled' || ticket.status === 'Expired'" class="void-msg">
+          This ticket is void and cannot be used.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,1 +1,185 @@
-/* My tickets styles */
+.my-tickets-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 16px;
+}
+.page-title {
+  font-size: 2rem;
+  font-weight: 800;
+}
+.page-title .logo-accent {
+  background: var(--grad-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.page-subtitle {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 600px) {
+  .header-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Grid layout */
+.tickets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+/* Digital Ticket card design */
+.ticket-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+}
+.ticket-card::before, .ticket-card::after {
+  content: '';
+  position: absolute;
+  top: 60px; /* Aligned below header */
+  width: 14px;
+  height: 14px;
+  background-color: var(--bg-main); /* Cutout illusion */
+  border-radius: 50%;
+  z-index: 2;
+}
+.ticket-card::before {
+  left: -8px;
+}
+.ticket-card::after {
+  right: -8px;
+}
+
+.ticket-header {
+  padding: 16px 20px;
+  border-bottom: 1px dashed var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+}
+.ticket-ref {
+  display: flex;
+  flex-direction: column;
+}
+.ref-label {
+  font-size: 0.65rem;
+  color: var(--text-dimmed);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.ref-val {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+.badges-row {
+  display: flex;
+  gap: 6px;
+}
+
+.ticket-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-grow: 1;
+}
+.event-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.3;
+}
+.ticket-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+.detail-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+.price-row {
+  border-top: 1px solid var(--border-color);
+  padding-top: 10px;
+  margin-top: 6px;
+  justify-content: space-between;
+}
+.detail-label {
+  color: var(--text-dimmed);
+  font-weight: 600;
+}
+.price-val {
+  font-weight: 800;
+  font-family: var(--font-display);
+  color: var(--accent-cyan);
+  font-size: 1.1rem;
+}
+
+.ticket-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.01);
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+}
+.flex-grow {
+  flex-grow: 1;
+}
+.void-msg {
+  font-size: 0.82rem;
+  color: var(--text-dimmed);
+  text-align: center;
+  width: 100%;
+  font-style: italic;
+}
+
+/* Cancelled & Expired cards dimming */
+.ticket-card.cancelled, .ticket-card.expired {
+  opacity: 0.6;
+}
+.ticket-card.cancelled:hover, .ticket-card.expired:hover {
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-lg);
+}
+
+.spinner-inline-sm {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s infinite linear;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
