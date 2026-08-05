@@ -22,7 +22,7 @@
   </div>
 
   <!-- Main Checkout Area -->
-  <div *ngIf="!loading() && ticket() && !errorMessage()" class="checkout-layout">
+  <div *ngIf="!loading() && ticket() && !errorMessage()" class="checkout-layout" [class.success-layout]="flowStep() === 'payment_success'">
     
     <!-- LEFT: Ticket details Summary (Hide on success and print for a cleaner receipt) -->
     <div *ngIf="flowStep() !== 'payment_success'" class="checkout-main glass-panel no-print">
@@ -163,6 +163,10 @@
 
       <!-- STEP 3: Payment Success / Ticket Voucher -->
       <div *ngIf="flowStep() === 'payment_success'" class="success-panel">
+        <div class="success-heading no-print">
+          <div class="success-icon" aria-hidden="true">✓</div>
+          <div><span class="eyebrow">Payment complete</span><h1>You're all set!</h1><p>Your ticket is confirmed and ready to use.</p></div>
+        </div>
         
         <!-- Voucher Ticket Printable -->
         <div class="ticket-voucher glass-panel">
