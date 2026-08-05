@@ -137,3 +137,12 @@ export interface OrganizerDashboardResponse {
   totalRevenue: number;
   eventStats: EventStat[];
 }
+
+export interface AdminOverview {
+  totalUsers: number; totalOrganizers: number; totalCustomers: number; totalEvents: number;
+  draftEvents: number; publishedEvents: number; totalTicketsSold: number; totalRevenue: number;
+  users: AdminUser[]; events: AdminEvent[]; categories: AdminCategory[];
+}
+export interface AdminUser { id: string; name: string; email: string; role: string; createdAt: string; }
+export interface AdminEvent { id: string; title: string; organizerName: string; categoryName: string; startDate: string; price: number; capacity: number; availableTickets: number; status: string; }
+export interface AdminCategory { id: string; name: string; eventCount: number; }

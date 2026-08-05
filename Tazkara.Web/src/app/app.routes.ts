@@ -7,6 +7,7 @@ import { MyTicketsComponent } from './pages/my-tickets/my-tickets';
 import { OrganizerDashboardComponent } from './pages/dashboard/dashboard';
 import { CreateEventComponent } from './pages/create-event/create-event';
 import { PaymentCheckoutComponent } from './pages/payment/payment-checkout';
+import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard';
 import { authGuard, noAuthGuard } from './services/auth.guard';
 
 export const routes: Routes = [
@@ -16,6 +17,7 @@ export const routes: Routes = [
   { path: 'events/:id', component: EventDetailsComponent },
   { path: 'my-tickets', component: MyTicketsComponent, canActivate: [authGuard], data: { roles: ['Customer'] } },
   { path: 'dashboard', component: OrganizerDashboardComponent, canActivate: [authGuard], data: { roles: ['Organizer'] } },
+  { path: 'admin', component: AdminDashboardComponent, canActivate: [authGuard], data: { roles: ['Admin'] } },
   { path: 'dashboard/events/create', component: CreateEventComponent, canActivate: [authGuard], data: { roles: ['Organizer'] } },
   { path: 'dashboard/events/edit/:id', component: CreateEventComponent, canActivate: [authGuard], data: { roles: ['Organizer'] } },
   { path: 'payment/checkout', component: PaymentCheckoutComponent, canActivate: [authGuard] },

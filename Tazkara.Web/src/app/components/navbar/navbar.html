@@ -12,6 +12,7 @@
 
       <!-- Organizer Links -->
       <a *ngIf="authService.isOrganizer" routerLink="/dashboard" routerLinkActive="active" class="nav-link">Organizer Dashboard</a>
+      <a *ngIf="authService.isAdmin" routerLink="/admin" routerLinkActive="active" class="nav-link">Admin Dashboard</a>
     </nav>
 
     <div class="navbar-actions">
