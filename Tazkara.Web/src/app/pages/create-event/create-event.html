@@ -1,1 +1,18 @@
-<p>create-event works!</p>
+<div class="event-form-page animated-fade-in">
+  <div class="page-header">
+    <div><h1>{{ isEditMode ? 'Edit event' : 'Create event' }}</h1><p>{{ isEditMode ? 'Update the details of your event.' : 'Start with a draft and publish when it is ready.' }}</p></div>
+    <a routerLink="/dashboard" class="btn btn-secondary">Back to dashboard</a>
+  </div>
+
+  <div *ngIf="loading" class="state-container"><div class="spinner"></div><p class="loading-text">Preparing your event form...</p></div>
+  <div *ngIf="errorMessage" class="error-banner">{{ errorMessage }}</div>
+
+  <form *ngIf="!loading" class="glass-panel event-form" [formGroup]="eventForm" (ngSubmit)="onSubmit()" novalidate>
+    <div class="form-group"><label class="form-label" for="title">Event title</label><input id="title" class="form-control" formControlName="title" maxlength="200" placeholder="e.g. Summer jazz night"/><small *ngIf="eventForm.controls.title.touched && eventForm.controls.title.invalid">A title is required (up to 200 characters).</small></div>
+    <div class="form-group"><label class="form-label" for="description">Description</label><textarea id="description" class="form-control textarea" formControlName="description" rows="5" placeholder="Tell attendees what to expect."></textarea><small *ngIf="eventForm.controls.description.touched && eventForm.controls.description.invalid">A description is required.</small></div>
+    <div class="form-row"><div class="form-group"><label class="form-label" for="category">Category</label><select id="category" class="form-control" formControlName="categoryId"><option value="" disabled>Select a category</option><option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option></select><small *ngIf="eventForm.controls.categoryId.touched && eventForm.controls.categoryId.invalid">Select a category.</small></div><div class="form-group"><label class="form-label" for="location">Location</label><input id="location" class="form-control" formControlName="location" maxlength="300" placeholder="Venue or address"/><small *ngIf="eventForm.controls.location.touched && eventForm.controls.location.invalid">A location is required.</small></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label" for="startDate">Starts</label><input id="startDate" type="datetime-local" class="form-control" formControlName="startDate"/><small *ngIf="eventForm.controls.startDate.touched && eventForm.controls.startDate.invalid">Choose a start date and time.</small></div><div class="form-group"><label class="form-label" for="endDate">Ends</label><input id="endDate" type="datetime-local" class="form-control" formControlName="endDate"/><small *ngIf="eventForm.controls.endDate.touched && eventForm.hasError('endBeforeStart')">The end time must be after the start time.</small></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label" for="capacity">Capacity</label><input id="capacity" type="number" min="1" max="100000" class="form-control" formControlName="capacity"/><small *ngIf="eventForm.controls.capacity.touched && eventForm.controls.capacity.invalid">Use a capacity between 1 and 100,000.</small></div><div class="form-group"><label class="form-label" for="price">Ticket price</label><input id="price" type="number" min="0" step="0.01" class="form-control" formControlName="price"/><small *ngIf="eventForm.controls.price.touched && eventForm.controls.price.invalid">Enter a non-negative price.</small></div></div>
+    <div class="form-actions"><a routerLink="/dashboard" class="btn btn-secondary">Cancel</a><button type="submit" class="btn btn-primary" [disabled]="submitting">{{ submitting ? 'Saving…' : isEditMode ? 'Save changes' : 'Create draft' }}</button></div>
+  </form>
+</div>

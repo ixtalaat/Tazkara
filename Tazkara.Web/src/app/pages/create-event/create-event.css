@@ -1,1 +1,9 @@
-/* Create event styles */
+.event-form-page { max-width: 900px; margin: 0 auto; }
+.page-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+.page-header h1 { font-size: 2rem; }.page-header p { color: var(--text-muted); margin-top: 4px; }
+.event-form { padding: 28px; }.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.textarea { resize: vertical; min-height: 120px; }.form-control { appearance: auto; }
+small { display: block; margin-top: 6px; color: var(--accent-rose); font-size: .8rem; }
+.form-actions { display: flex; justify-content: flex-end; gap: 12px; padding-top: 8px; border-top: 1px solid var(--border-color); }
+.error-banner { margin-bottom: 20px; padding: 12px 16px; color: var(--accent-rose); background: rgba(244,63,94,.1); border: 1px solid rgba(244,63,94,.2); border-radius: 10px; }
+@media (max-width: 640px) { .page-header { align-items: flex-start; flex-direction: column; }.form-row { grid-template-columns: 1fr; gap: 0; }.event-form { padding: 20px; }.form-actions { justify-content: stretch; }.form-actions .btn { flex: 1; } }
