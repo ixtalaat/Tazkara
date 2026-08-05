@@ -22,7 +22,9 @@ namespace Tazkara.Application.Mappings
                 .Map(dest => dest.Status, src => src.Status.ToString())
                 .Map(dest => dest.PaymentStatus, src => src.PaymentStatus.ToString())
                 .Map(dest => dest.EventTitle, src => src.Event != null ? src.Event.Title : string.Empty)
-                .Map(dest => dest.EventStartDate, src => src.Event != null ? src.Event.StartDate : default);
+                .Map(dest => dest.EventStartDate, src => src.Event != null ? src.Event.StartDate : default)
+                .Map(dest => dest.EventLocation, src => src.Event != null ? src.Event.Location : string.Empty)
+                .Map(dest => dest.Price, src => src.Event != null ? src.Event.Price : 0m);
 
             TypeAdapterConfig<Payment, PaymentDto>.NewConfig()
                 .Map(dest => dest.Status, src => src.Status.ToString())

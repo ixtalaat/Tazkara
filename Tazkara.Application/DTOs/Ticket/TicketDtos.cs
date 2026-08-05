@@ -12,6 +12,8 @@ namespace Tazkara.Application.DTOs.Ticket
         public Guid EventId { get; set; }
         public string EventTitle { get; set; } = string.Empty;
         public DateTime EventStartDate { get; set; }
+        public string EventLocation { get; set; } = string.Empty;
+        public decimal Price { get; set; }
     }
 
     public class ReserveTicketRequest
