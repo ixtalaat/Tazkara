@@ -34,7 +34,9 @@ export class CreateEventComponent implements OnInit {
   categories: Category[] = [];
   // Categories load independently so a slow/unavailable category request
   // never prevents the event form itself from rendering.
-  loading = !!this.eventId;
+  // Render the form immediately; edit data is patched in when the request
+  // completes instead of blocking the whole page behind a network spinner.
+  loading = false;
   submitting = false;
   errorMessage = '';
 
@@ -69,16 +71,15 @@ export class CreateEventComponent implements OnInit {
   }
 
   loadEvent(id: string): void {
-    this.eventService.getOrganizerEvents().pipe(timeout(10000)).subscribe({
+    this.eventService.getEventById(id).pipe(timeout(10000)).subscribe({
       next: (response) => {
-        const event = response.data?.find(item => item.id.toLowerCase() === id.toLowerCase());
-        if (!response.success || !event) {
+        if (!response.success || !response.data) {
           this.loading = false;
-          this.errorMessage = response.message || 'Unable to find this event in your organizer account.';
+          this.errorMessage = response.message || 'Unable to load this event.';
           return;
         }
         this.loading = false;
-        this.populateForm(event);
+        this.populateForm(response.data);
       },
       error: (error) => {
         this.loading = false;
