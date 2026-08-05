@@ -11,6 +11,11 @@ function endAfterStart(control: AbstractControl): ValidationErrors | null {
   return startDate && endDate && new Date(endDate) <= new Date(startDate) ? { endBeforeStart: true } : null;
 }
 
+function startInFuture(control: AbstractControl): ValidationErrors | null {
+  const value = control.value;
+  return value && new Date(value) <= new Date() ? { startInPast: true } : null;
+}
+
 @Component({
   selector: 'app-create-event',
   imports: [NgFor, NgIf, ReactiveFormsModule, RouterLink],
@@ -36,7 +41,7 @@ export class CreateEventComponent implements OnInit {
     title: ['', [Validators.required, Validators.maxLength(200)]],
     description: ['', [Validators.required]],
     location: ['', [Validators.required, Validators.maxLength(300)]],
-    startDate: ['', Validators.required],
+    startDate: ['', [Validators.required, startInFuture]],
     endDate: ['', Validators.required],
     capacity: [null as number | null, [Validators.required, Validators.min(1), Validators.max(100000)]],
     price: [null as number | null, [Validators.required, Validators.min(0)]],
@@ -83,6 +88,7 @@ export class CreateEventComponent implements OnInit {
   onSubmit(): void {
     if (this.eventForm.invalid || this.submitting) {
       this.eventForm.markAllAsTouched();
+      this.errorMessage = 'Please fix the highlighted fields before saving.';
       return;
     }
 
@@ -103,13 +109,17 @@ export class CreateEventComponent implements OnInit {
       next: (response) => {
         this.submitting = false;
         if (response.success) this.router.navigate(['/dashboard']);
-        else this.errorMessage = response.message || 'Unable to save the event.';
+        else this.errorMessage = this.apiError(response.message, response.errors) || 'Unable to save the event.';
       },
       error: (error) => {
         this.submitting = false;
-        this.errorMessage = error.error?.message || 'Unable to save the event.';
+        this.errorMessage = this.apiError(error.error?.message, error.error?.errors) || 'Unable to save the event.';
       }
     });
+  }
+
+  private apiError(message?: string, errors?: string[] | null): string {
+    return errors?.filter(Boolean).join(' ') || message || '';
   }
 
   private populateForm(event: Event): void {
