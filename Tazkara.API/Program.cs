@@ -170,7 +170,34 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 // Configure OpenAPI
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        var securityScheme = new Microsoft.OpenApi.OpenApiSecurityScheme
+        {
+            Type = Microsoft.OpenApi.SecuritySchemeType.Http,
+            Name = "Authorization",
+            Scheme = JwtBearerDefaults.AuthenticationScheme,
+            BearerFormat = "JWT",
+            In = Microsoft.OpenApi.ParameterLocation.Header,
+            Description = "Enter your JWT token in the format: Bearer {token}"
+        };
+
+        document.Components ??= new Microsoft.OpenApi.OpenApiComponents();
+        document.Components.SecuritySchemes ??= new Dictionary<string, Microsoft.OpenApi.IOpenApiSecurityScheme>();
+        document.Components.SecuritySchemes.Add(JwtBearerDefaults.AuthenticationScheme, securityScheme);
+
+        var schemeReference = new Microsoft.OpenApi.OpenApiSecuritySchemeReference(JwtBearerDefaults.AuthenticationScheme, document);
+        document.Security ??= new List<Microsoft.OpenApi.OpenApiSecurityRequirement>();
+        document.Security.Add(new Microsoft.OpenApi.OpenApiSecurityRequirement
+        {
+            [schemeReference] = new List<string>()
+        });
+
+        return Task.CompletedTask;
+    });
+});
 
 var app = builder.Build();
 
@@ -236,6 +263,11 @@ app.MapHealthChecks("/health", new HealthCheckOptions
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "Tazkara API v1");
+        options.RoutePrefix = "swagger";
+    });
 }
 
 app.MapControllers();
