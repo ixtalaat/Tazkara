@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { ApiResponse, AuthResponse, User } from '../models/types';
 
 @Injectable({
@@ -8,6 +9,7 @@ import { ApiResponse, AuthResponse, User } from '../models/types';
 })
 export class AuthService {
   private http = inject(HttpClient);
+  private apiUrl = environment.apiUrl;
   
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
@@ -37,7 +39,7 @@ export class AuthService {
   }
 
   login(credentials: any): Observable<ApiResponse<AuthResponse>> {
-    return this.http.post<ApiResponse<AuthResponse>>('/api/Auth/login', credentials).pipe(
+    return this.http.post<ApiResponse<AuthResponse>>(`${this.apiUrl}/api/Auth/login`, credentials).pipe(
       tap(response => {
         if (response.success && response.data) {
           const authData = response.data;
@@ -57,7 +59,7 @@ export class AuthService {
   }
 
   register(userData: any): Observable<ApiResponse<any>> {
-    return this.http.post<ApiResponse<any>>('/api/Auth/register', userData);
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/api/Auth/register`, userData);
   }
 
   logout(): void {

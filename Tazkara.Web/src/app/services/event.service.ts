@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { ApiResponse, PaginatedResponse, Event, Category, CreateEventRequest, UpdateEventRequest, EventFilterRequest } from '../models/types';
 
 @Injectable({
@@ -8,13 +9,14 @@ import { ApiResponse, PaginatedResponse, Event, Category, CreateEventRequest, Up
 })
 export class EventService {
   private http = inject(HttpClient);
+  private apiUrl = environment.apiUrl;
 
   getCategories(): Observable<ApiResponse<Category[]>> {
-    return this.http.get<ApiResponse<Category[]>>('/api/Categories');
+    return this.http.get<ApiResponse<Category[]>>(`${this.apiUrl}/api/Categories`);
   }
 
   createCategory(name: string): Observable<ApiResponse<Category>> {
-    return this.http.post<ApiResponse<Category>>('/api/Categories', { name });
+    return this.http.post<ApiResponse<Category>>(`${this.apiUrl}/api/Categories`, { name });
   }
 
   browseEvents(filter: EventFilterRequest): Observable<ApiResponse<PaginatedResponse<Event>>> {
@@ -44,34 +46,34 @@ export class EventService {
       params = params.set('status', filter.status);
     }
 
-    return this.http.get<ApiResponse<PaginatedResponse<Event>>>('/api/Events', { params });
+    return this.http.get<ApiResponse<PaginatedResponse<Event>>>(`${this.apiUrl}/api/Events`, { params });
   }
 
   getEventById(id: string): Observable<ApiResponse<Event>> {
-    return this.http.get<ApiResponse<Event>>(`/api/Events/${id}`);
+    return this.http.get<ApiResponse<Event>>(`${this.apiUrl}/api/Events/${id}`);
   }
 
   createEvent(request: CreateEventRequest): Observable<ApiResponse<Event>> {
-    return this.http.post<ApiResponse<Event>>('/api/Events', request);
+    return this.http.post<ApiResponse<Event>>(`${this.apiUrl}/api/Events`, request);
   }
 
   updateEvent(id: string, request: UpdateEventRequest): Observable<ApiResponse<Event>> {
-    return this.http.put<ApiResponse<Event>>(`/api/Events/${id}`, request);
+    return this.http.put<ApiResponse<Event>>(`${this.apiUrl}/api/Events/${id}`, request);
   }
 
   deleteEvent(id: string): Observable<ApiResponse<boolean>> {
-    return this.http.delete<ApiResponse<boolean>>(`/api/Events/${id}`);
+    return this.http.delete<ApiResponse<boolean>>(`${this.apiUrl}/api/Events/${id}`);
   }
 
   publishEvent(id: string): Observable<ApiResponse<boolean>> {
-    return this.http.patch<ApiResponse<boolean>>(`/api/Events/${id}/publish`, {});
+    return this.http.patch<ApiResponse<boolean>>(`${this.apiUrl}/api/Events/${id}/publish`, {});
   }
 
   cancelEvent(id: string): Observable<ApiResponse<boolean>> {
-    return this.http.patch<ApiResponse<boolean>>(`/api/Events/${id}/cancel`, {});
+    return this.http.patch<ApiResponse<boolean>>(`${this.apiUrl}/api/Events/${id}/cancel`, {});
   }
 
   getOrganizerEvents(): Observable<ApiResponse<Event[]>> {
-    return this.http.get<ApiResponse<Event[]>>('/api/Events/my-events');
+    return this.http.get<ApiResponse<Event[]>>(`${this.apiUrl}/api/Events/my-events`);
   }
 }

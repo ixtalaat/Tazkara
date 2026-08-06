@@ -1,6 +1,6 @@
 {
   "/api": {
-    "target": "https://tazkara.runasp.net",
+    "target": "http://localhost:5037",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
