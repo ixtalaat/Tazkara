@@ -260,15 +260,15 @@ app.MapHealthChecks("/health", new HealthCheckOptions
 });
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.MapOpenApi();
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/openapi/v1.json", "Tazkara API v1");
         options.RoutePrefix = "swagger";
     });
-}
+//}
 
 app.MapControllers();
 
